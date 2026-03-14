@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero Banner -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <p class="hero-eyebrow">Premium Wedding Return Gifts</p>
+                    <h1 class="hero-title">Every Celebration Deserves a <em>Perfect Gift</em></h1>
+                    <p class="hero-subtitle">Thoughtfully curated return gifts for weddings, baby showers, housewarmings & all your special moments.</p>
+                    <div class="hero-actions">
+                        <a href="{% url 'product_list' %}" class="btn-primary-gold">Shop Now <i class="fas fa-arrow-right ms-2"></i></a>
+                        <a href="#categories" class="btn-outline-gold ms-3">Browse Categories</a>
+                    </div>
+                    <div class="hero-stats mt-5">
+                        <div class="stat-item">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Products</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-number">10K+</span>
+                            <span class="stat-label">Happy Customers</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-number">Pan India</span>
+                            <span class="stat-label">Delivery</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- Trust Bar -->
+<section class="trust-bar">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fas fa-shipping-fast"></i>
+                    <span>Free Shipping<br><small>Orders above ₹999</small></span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure Payment<br><small>100% Safe Checkout</small></span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fas fa-gift"></i>
+                    <span>Gift Wrapping<br><small>Complimentary</small></span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fas fa-headset"></i>
+                    <span>24/7 Support<br><small>Always Here for You</small></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="products-section" id="featured">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Handpicked for You</span>
+            <h2 class="section-title">Featured <em>Return Gifts</em></h2>
+            <div class="section-divider"><span>✦</span></div>
+        </div>
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        {% if product.discount_percentage > 0 %}
+                        <span class="badge-discount">-{{ product.discount_percentage }}%</span>
+                        {% endif %}
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                        {% else %}
+                        <div class="product-img-placeholder"><i class="fas fa-gift"></i></div>
+                        {% endif %}
+                        <div class="product-overlay">
+                            <a href="{% url 'product_detail' product.slug %}" class="overlay-btn">Quick View</a>
+                            <form action="{% url 'add_to_cart' product.id %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="overlay-btn">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category">{{ product.category.name }}</p>
+                        <h3 class="product-name"><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a></h3>
+                        <div class="product-price">
+                            {% if product.offer_price %}
+                            <span class="price-current">₹{{ product.offer_price }}</span>
+                            <span class="price-original">₹{{ product.price }}</span>
+                            {% else %}
+                            <span class="price-current">₹{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'product_list' %}" class="btn-primary-gold">View All Products</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Categories Section -->
+{% if categories %}
+<section class="categories-section" id="categories">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Shop by Occasion</span>
+            <h2 class="section-title">Browse <em>Categories</em></h2>
+            <div class="section-divider"><span>✦</span></div>
+        </div>
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'product_list' %}?category={{ category.slug }}" class="category-card">
+                    <div class="category-icon">
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        {% else %}
+                        <i class="fas fa-gift"></i>
+                        {% endif %}
+                    </div>
+                    <h4 class="category-name">{{ category.name }}</h4>
+                    <span class="category-count">{{ category.products.count }} gifts</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Banner Strip -->
+<section class="promo-banner">
+    <div class="container">
+        <div class="promo-inner">
+            <div class="promo-text">
+                <h3>Bulk Orders for Weddings?</h3>
+                <p>Get special discounts on orders of 50+ pieces. Custom packaging available.</p>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn-primary-gold">Get Quote</a>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Products -->
+{% if popular_products %}
+<section class="products-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Trending Now</span>
+            <h2 class="section-title">Popular <em>Wedding Gifts</em></h2>
+            <div class="section-divider"><span>✦</span></div>
+        </div>
+        <div class="row g-4">
+            {% for product in popular_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        {% if product.discount_percentage > 0 %}
+                        <span class="badge-discount">-{{ product.discount_percentage }}%</span>
+                        {% endif %}
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                        {% else %}
+                        <div class="product-img-placeholder"><i class="fas fa-gift"></i></div>
+                        {% endif %}
+                        <div class="product-overlay">
+                            <a href="{% url 'product_detail' product.slug %}" class="overlay-btn">Quick View</a>
+                            <form action="{% url 'add_to_cart' product.id %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="overlay-btn">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category">{{ product.category.name }}</p>
+                        <h3 class="product-name"><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a></h3>
+                        <div class="product-price">
+                            {% if product.offer_price %}
+                            <span class="price-current">₹{{ product.offer_price }}</span>
+                            <span class="price-original">₹{{ product.price }}</span>
+                            {% else %}
+                            <span class="price-current">₹{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Testimonials -->
+{% if testimonials %}
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">What Our Customers Say</span>
+            <h2 class="section-title">Celebrations Shared <em>With Love</em></h2>
+            <div class="section-divider"><span>✦</span></div>
+        </div>
+        <div class="row g-4">
+            {% for testimonial in testimonials %}
+            <div class="col-md-6 col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        {% for i in "12345" %}
+                        <i class="fas fa-star {% if forloop.counter <= testimonial.rating %}active{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                    <p class="testimonial-text">"{{ testimonial.message }}"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            {% if testimonial.avatar %}
+                            <img src="{{ testimonial.avatar.url }}" alt="{{ testimonial.name }}">
+                            {% else %}
+                            <span>{{ testimonial.name|first }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h6 class="author-name">{{ testimonial.name }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Why Choose Us -->
+<section class="why-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Our Promise</span>
+            <h2 class="section-title">Why Choose <em>Isha Return Gifts</em></h2>
+            <div class="section-divider"><span>✦</span></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-award"></i></div>
+                    <h4>Premium Quality</h4>
+                    <p>Every product is handpicked for quality and craftsmanship that will delight your guests.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-boxes"></i></div>
+                    <h4>Bulk Orders</h4>
+                    <p>Seamlessly handle bulk orders for large weddings with custom packaging options.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-palette"></i></div>
+                    <h4>Customization</h4>
+                    <p>Personalize your gifts with names, dates, and custom messages for a special touch.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-truck"></i></div>
+                    <h4>Timely Delivery</h4>
+                    <p>We understand your event dates. Count on us for on-time delivery, every time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

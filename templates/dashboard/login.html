@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login – Isha Return Gifts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #0f0f13;
+        min-height: 100vh;
+        display: flex; align-items: center; justify-content: center;
+        position: relative; overflow: hidden;
+    }
+    body::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 20% 50%, rgba(139,37,53,0.15) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%);
+    }
+    .login-card {
+        position: relative; z-index: 1;
+        background: #16161d;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
+        padding: 48px 44px;
+        width: 100%; max-width: 420px;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+    .login-brand {
+        text-align: center; margin-bottom: 36px;
+    }
+    .login-icon {
+        width: 64px; height: 64px; border-radius: 16px;
+        background: linear-gradient(135deg, #c9a84c, #6b1f2a);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px; color: white; margin: 0 auto 16px;
+    }
+    .login-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.7rem; font-weight: 600; color: #e8e8f0;
+        margin-bottom: 4px;
+    }
+    .login-sub { font-size: 13px; color: #555568; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #555568; margin-bottom: 8px; }
+    .form-control {
+        width: 100%; padding: 12px 16px; background: #1e1e28;
+        border: 1px solid rgba(255,255,255,0.07); border-radius: 8px;
+        color: #e8e8f0; font-family: 'Inter', sans-serif; font-size: 14px;
+        outline: none; transition: all 0.2s;
+    }
+    .form-control:focus { border-color: #c9a84c; box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
+    .input-wrap { position: relative; }
+    .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #555568; font-size: 14px; }
+    .input-wrap .form-control { padding-left: 40px; }
+    .btn-login {
+        width: 100%; padding: 13px; background: linear-gradient(135deg, #c9a84c, #a07830);
+        color: white; border: none; border-radius: 8px;
+        font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+        letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s;
+        margin-top: 8px;
+    }
+    .btn-login:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
+    .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+    .login-footer { text-align: center; margin-top: 24px; font-size: 12px; color: #333348; }
+    .login-footer a { color: #c9a84c; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="login-brand">
+        <div class="login-icon">✦</div>
+        <div class="login-title">Admin Panel</div>
+        <div class="login-sub">Isha Return Gifts – Management</div>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ message }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+        </div>
+        <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt me-2"></i> Sign In to Dashboard</button>
+    </form>
+
+    <div class="login-footer">
+        <a href="{% url 'home' %}">← Back to Website</a>
+        &nbsp;·&nbsp;
+        <span>Admin only access</span>
+    </div>
+</div>
+</body>
+</html>

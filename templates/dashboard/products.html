@@ -1,0 +1,120 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Products{% endblock %}
+{% block nav_products %}active{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div class="section-title-group">
+        <h2>Product Catalog</h2>
+        <p>Manage your return gift inventory</p>
+    </div>
+    <a href="{% url 'dashboard_product_add' %}" class="btn-gold"><i class="fas fa-plus"></i> Add Product</a>
+</div>
+
+<div class="dash-card">
+    <!-- Filters -->
+    <div class="filter-bar">
+        <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;width:100%;align-items:center;">
+            <input type="text" name="search" class="form-control search-input" placeholder="Search products..." value="{{ search }}">
+            <select name="category" class="form-control">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if category_filter == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="stock" class="form-control">
+                <option value="">All Stock</option>
+                <option value="low" {% if stock_filter == 'low' %}selected{% endif %}>Low Stock (≤10)</option>
+                <option value="out" {% if stock_filter == 'out' %}selected{% endif %}>Out of Stock</option>
+            </select>
+            <button type="submit" class="btn-gold"><i class="fas fa-filter"></i> Filter</button>
+            <a href="{% url 'dashboard_products' %}" class="btn-outline"><i class="fas fa-times"></i> Clear</a>
+        </form>
+    </div>
+
+    <div style="overflow-x:auto;">
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Offer Price</th>
+                    <th>Stock</th>
+                    <th>Featured</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" class="product-thumb" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="product-thumb-placeholder"><i class="fas fa-gift"></i></div>
+                            {% endif %}
+                            <div>
+                                <div style="font-weight:600;font-size:13.5px;">{{ product.name }}</div>
+                                <div style="font-size:11px;color:var(--text-muted);">{{ product.description|truncatechars:40 }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color:var(--text-dim);">{{ product.category.name }}</td>
+                    <td style="color:var(--text-dim);">₹{{ product.price }}</td>
+                    <td>
+                        {% if product.offer_price %}
+                        <span style="color:var(--gold);font-weight:600;">₹{{ product.offer_price }}</span>
+                        {% else %}
+                        <span style="color:var(--text-muted);">–</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.stock_quantity == 0 %}
+                        <span style="color:#f87171;font-weight:600;">Out of Stock</span>
+                        {% elif product.stock_quantity <= 10 %}
+                        <span style="color:var(--orange);font-weight:600;">{{ product.stock_quantity }} ⚠</span>
+                        {% else %}
+                        <span style="color:var(--green);font-weight:600;">{{ product.stock_quantity }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.is_featured %}
+                        <span style="color:var(--gold);"><i class="fas fa-star"></i></span>
+                        {% else %}
+                        <span style="color:var(--text-muted);"><i class="far fa-star"></i></span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.is_active %}
+                        <span class="badge-status badge-delivered">Active</span>
+                        {% else %}
+                        <span class="badge-status badge-cancelled">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <a href="{% url 'dashboard_product_edit' product.id %}" class="btn-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'product_detail' product.slug %}" class="btn-icon" title="View on Site" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                            <a href="{% url 'dashboard_product_delete' product.id %}" class="btn-icon danger" title="Delete"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fas fa-gift"></i>
+                            <p>No products found. <a href="{% url 'dashboard_product_add' %}" style="color:var(--gold);">Add your first product</a></p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

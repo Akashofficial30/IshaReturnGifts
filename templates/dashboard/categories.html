@@ -1,0 +1,64 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Categories{% endblock %}
+{% block nav_categories %}active{% endblock %}
+{% block page_title %}Categories{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div class="section-title-group">
+        <h2>Product Categories</h2>
+        <p>Organize your gift catalog</p>
+    </div>
+    <a href="{% url 'dashboard_category_add' %}" class="btn-gold"><i class="fas fa-plus"></i> Add Category</a>
+</div>
+
+<div class="dash-card">
+    <div style="overflow-x:auto;">
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Slug</th>
+                    <th>Products</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            {% if cat.image %}
+                            <img src="{{ cat.image.url }}" class="product-thumb">
+                            {% else %}
+                            <div class="product-thumb-placeholder"><i class="fas fa-tag"></i></div>
+                            {% endif %}
+                            <span style="font-weight:600;">{{ cat.name }}</span>
+                        </div>
+                    </td>
+                    <td><span style="font-family:monospace;font-size:12px;color:var(--text-muted);">{{ cat.slug }}</span></td>
+                    <td>
+                        <span style="background:var(--gold-dim);color:var(--gold);font-weight:700;padding:3px 10px;border-radius:12px;font-size:12px;">
+                            {{ cat.product_count }}
+                        </span>
+                    </td>
+                    <td style="color:var(--text-dim);max-width:200px;">{{ cat.description|truncatechars:50 }}</td>
+                    <td style="color:var(--text-muted);font-size:12px;">{{ cat.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <a href="{% url 'dashboard_category_edit' cat.id %}" class="btn-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="btn-icon" title="View Products" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                            <a href="{% url 'dashboard_category_delete' cat.id %}" class="btn-icon danger" title="Delete"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6"><div class="empty-state"><i class="fas fa-tags"></i><p>No categories yet.</p></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

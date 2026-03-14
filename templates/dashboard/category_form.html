@@ -1,0 +1,46 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ action }} Category{% endblock %}
+{% block nav_categories %}active{% endblock %}
+{% block page_title %}{{ action }} Category{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'dashboard_categories' %}" class="btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-tag text-gold me-2"></i>Category Details</span>
+            </div>
+            <div class="dash-card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Category Name *</label>
+                        <input type="text" name="name" class="form-control" required value="{{ category.name|default:'' }}" placeholder="e.g. Wedding Return Gifts">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Brief description...">{{ category.description|default:'' }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category Image</label>
+                        {% if category.image %}
+                        <div style="margin-bottom:10px;">
+                            <img src="{{ category.image.url }}" style="height:60px;border-radius:8px;border:1px solid var(--border);">
+                        </div>
+                        {% endif %}
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                    </div>
+                    <hr class="divider">
+                    <div style="display:flex;gap:12px;">
+                        <button type="submit" class="btn-gold"><i class="fas fa-save"></i> Save Category</button>
+                        <a href="{% url 'dashboard_categories' %}" class="btn-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

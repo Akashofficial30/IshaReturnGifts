@@ -1,0 +1,147 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ action }} Product{% endblock %}
+{% block nav_products %}active{% endblock %}
+{% block page_title %}{{ action }} Product{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'dashboard_products' %}" class="btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to Products</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-gift text-gold me-2"></i>Product Information</span>
+            </div>
+            <div class="dash-card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">Product Name *</label>
+                                <input type="text" name="name" class="form-control" required value="{{ product.name|default:'' }}" placeholder="e.g. Brass Deepam Set">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select name="category" class="form-control" required>
+                                    <option value="">Select category...</option>
+                                    {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Price (₹) *</label>
+                                <input type="number" name="price" class="form-control" required step="0.01" value="{{ product.price|default:'' }}" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Offer Price (₹)</label>
+                                <input type="number" name="offer_price" class="form-control" step="0.01" value="{{ product.offer_price|default:'' }}" placeholder="Optional">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">Description *</label>
+                                <textarea name="description" class="form-control" rows="4" required placeholder="Product description...">{{ product.description|default:'' }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Stock Quantity *</label>
+                                <input type="number" name="stock_quantity" class="form-control" required value="{{ product.stock_quantity|default:'0' }}" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4" style="display:flex;align-items:center;padding-top:28px;">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" {% if product.is_featured %}checked{% endif %}>
+                                <label class="form-check-label" for="is_featured">Featured Product ⭐</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4" style="display:flex;align-items:center;padding-top:28px;">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_active" class="form-check-input" id="is_active" {% if product.is_active or action == 'Add' %}checked{% endif %}>
+                                <label class="form-check-label" for="is_active">Active (visible on site)</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">Product Image</label>
+                                {% if product.image %}
+                                <div style="margin-bottom:12px;">
+                                    <img src="{{ product.image.url }}" style="height:80px;border-radius:8px;border:1px solid var(--border);">
+                                    <p class="form-hint">Current image – upload a new one to replace</p>
+                                </div>
+                                {% endif %}
+                                <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(this)">
+                                <div id="imagePreview" style="margin-top:12px;display:none;">
+                                    <img id="previewImg" style="height:80px;border-radius:8px;border:1px solid var(--gold);">
+                                </div>
+                                <p class="form-hint">JPG, PNG or WebP. Recommended: 800×800px square.</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <hr class="divider">
+                            <div style="display:flex;gap:12px;">
+                                <button type="submit" class="btn-gold"><i class="fas fa-save"></i> {{ action }} Product</button>
+                                <a href="{% url 'dashboard_products' %}" class="btn-outline">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips Sidebar -->
+    <div class="col-lg-4">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-lightbulb text-gold me-2"></i>Tips</span>
+            </div>
+            <div class="dash-card-body">
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div>
+                        <div style="font-weight:600;font-size:13px;color:var(--text);margin-bottom:4px;">📸 Image Quality</div>
+                        <div style="font-size:12.5px;color:var(--text-muted);">Use square images (800×800px) with white background for best results.</div>
+                    </div>
+                    <div>
+                        <div style="font-weight:600;font-size:13px;color:var(--text);margin-bottom:4px;">💰 Pricing</div>
+                        <div style="font-size:12.5px;color:var(--text-muted);">Set an offer price lower than the regular price to show discount badges on the website.</div>
+                    </div>
+                    <div>
+                        <div style="font-weight:600;font-size:13px;color:var(--text);margin-bottom:4px;">⭐ Featured</div>
+                        <div style="font-size:12.5px;color:var(--text-muted);">Featured products appear on the homepage. Keep 4–8 featured products for best display.</div>
+                    </div>
+                    <div>
+                        <div style="font-weight:600;font-size:13px;color:var(--text);margin-bottom:4px;">📦 Stock</div>
+                        <div style="font-size:12.5px;color:var(--text-muted);">Products with 0 stock show "Out of Stock" and can't be added to cart.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %}

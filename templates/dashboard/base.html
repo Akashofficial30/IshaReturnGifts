@@ -1,0 +1,491 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} – Isha Return Gifts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+    :root {
+        --bg: #0f0f13;
+        --bg2: #16161d;
+        --bg3: #1e1e28;
+        --border: rgba(255,255,255,0.07);
+        --gold: #c9a84c;
+        --gold-light: #e8c97a;
+        --gold-dim: rgba(201,168,76,0.15);
+        --maroon: #8b2535;
+        --maroon-light: #b03044;
+        --text: #e8e8f0;
+        --text-dim: #8888a0;
+        --text-muted: #555568;
+        --green: #22c55e;
+        --red: #ef4444;
+        --blue: #3b82f6;
+        --orange: #f97316;
+        --sidebar-w: 260px;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+        position: fixed; left: 0; top: 0; bottom: 0;
+        width: var(--sidebar-w);
+        background: var(--bg2);
+        border-right: 1px solid var(--border);
+        display: flex; flex-direction: column;
+        z-index: 100;
+        transition: transform 0.3s ease;
+    }
+    .sidebar-brand {
+        padding: 28px 24px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+    .brand-logo {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--gold-light);
+        display: flex; align-items: center; gap: 10px;
+    }
+    .brand-logo .icon { font-size: 1.1rem; color: var(--gold); }
+    .brand-sub { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+
+    .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+    .nav-section { padding: 0 16px; margin-bottom: 8px; }
+    .nav-section-label {
+        font-size: 10px; font-weight: 600; letter-spacing: 2px;
+        text-transform: uppercase; color: var(--text-muted);
+        padding: 8px 8px 6px;
+    }
+    .nav-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 12px; border-radius: var(--radius-sm);
+        color: var(--text-dim); text-decoration: none;
+        font-size: 13.5px; font-weight: 500;
+        transition: all 0.2s ease;
+        margin-bottom: 2px; position: relative;
+    }
+    .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .nav-item.active {
+        background: var(--gold-dim);
+        color: var(--gold-light);
+        border: 1px solid rgba(201,168,76,0.2);
+    }
+    .nav-item.active i { color: var(--gold); }
+    .nav-badge {
+        margin-left: auto; background: var(--maroon);
+        color: white; font-size: 10px; font-weight: 700;
+        padding: 2px 7px; border-radius: 20px;
+    }
+
+    .sidebar-footer {
+        padding: 16px;
+        border-top: 1px solid var(--border);
+    }
+    .admin-profile {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 12px; border-radius: var(--radius-sm);
+        background: var(--bg3);
+    }
+    .admin-avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--gold), var(--maroon));
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 14px; color: white; flex-shrink: 0;
+    }
+    .admin-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .admin-role { font-size: 11px; color: var(--text-muted); }
+
+    /* ── MAIN ── */
+    .main-content {
+        margin-left: var(--sidebar-w);
+        min-height: 100vh;
+        display: flex; flex-direction: column;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+        position: sticky; top: 0; z-index: 50;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        height: 64px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-title {
+        font-size: 18px; font-weight: 600; color: var(--text);
+    }
+    .topbar-title span { color: var(--text-muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-btn {
+        width: 38px; height: 38px; border-radius: var(--radius-sm);
+        background: var(--bg3); border: 1px solid var(--border);
+        color: var(--text-dim); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none; transition: all 0.2s;
+        font-size: 14px;
+    }
+    .topbar-btn:hover { background: var(--gold-dim); color: var(--gold); border-color: rgba(201,168,76,0.3); }
+    .live-dot {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 12px; color: var(--text-muted);
+    }
+    .live-dot::before {
+        content: ''; width: 8px; height: 8px; border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* ── PAGE CONTENT ── */
+    .page-content { padding: 32px; flex: 1; }
+
+    /* ── MESSAGES ── */
+    .messages-wrap { padding: 0 32px; margin-top: 8px; }
+    .dash-alert {
+        padding: 12px 18px; border-radius: var(--radius-sm);
+        font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+        margin-bottom: 8px; border: 1px solid;
+    }
+    .dash-alert.success { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #86efac; }
+    .dash-alert.error { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+    .dash-alert.info { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #93c5fd; }
+
+    /* ── STAT CARDS ── */
+    .stat-card {
+        background: var(--bg2); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 24px;
+        position: relative; overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-2px); }
+    .stat-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .stat-card.gold::before { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+    .stat-card.maroon::before { background: linear-gradient(90deg, var(--maroon), var(--maroon-light)); }
+    .stat-card.green::before { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .stat-card.blue::before { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+    .stat-card.orange::before { background: linear-gradient(90deg, #c2410c, #f97316); }
+
+    .stat-icon {
+        width: 48px; height: 48px; border-radius: var(--radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px; margin-bottom: 16px;
+    }
+    .stat-icon.gold { background: var(--gold-dim); color: var(--gold); }
+    .stat-icon.maroon { background: rgba(139,37,53,0.2); color: var(--maroon-light); }
+    .stat-icon.green { background: rgba(34,197,94,0.1); color: var(--green); }
+    .stat-icon.blue { background: rgba(59,130,246,0.1); color: var(--blue); }
+    .stat-icon.orange { background: rgba(249,115,22,0.1); color: var(--orange); }
+
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+    .stat-sub .up { color: var(--green); } .stat-sub .down { color: var(--red); }
+
+    /* ── CARDS / PANELS ── */
+    .dash-card {
+        background: var(--bg2); border: 1px solid var(--border);
+        border-radius: var(--radius); overflow: hidden;
+    }
+    .dash-card-header {
+        padding: 18px 24px; border-bottom: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-card-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .dash-card-body { padding: 24px; }
+
+    /* ── TABLE ── */
+    .dash-table { width: 100%; border-collapse: collapse; }
+    .dash-table th {
+        padding: 12px 16px; text-align: left;
+        font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+        text-transform: uppercase; color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+    .dash-table td {
+        padding: 14px 16px; border-bottom: 1px solid var(--border);
+        font-size: 13.5px; color: var(--text);
+        vertical-align: middle;
+    }
+    .dash-table tr:last-child td { border-bottom: none; }
+    .dash-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ── BADGES ── */
+    .badge-status {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: 20px;
+        font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+    }
+    .badge-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+    .badge-pending { background: rgba(249,115,22,0.15); color: #fb923c; }
+    .badge-pending::before { background: #fb923c; }
+    .badge-confirmed { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge-confirmed::before { background: #60a5fa; }
+    .badge-processing { background: rgba(168,85,247,0.15); color: #c084fc; }
+    .badge-processing::before { background: #c084fc; }
+    .badge-shipped { background: rgba(6,182,212,0.15); color: #22d3ee; }
+    .badge-shipped::before { background: #22d3ee; }
+    .badge-delivered { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .badge-delivered::before { background: #4ade80; }
+    .badge-cancelled { background: rgba(239,68,68,0.15); color: #f87171; }
+    .badge-cancelled::before { background: #f87171; }
+    .badge-paid { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .badge-paid::before { background: #4ade80; }
+    .badge-failed { background: rgba(239,68,68,0.15); color: #f87171; }
+    .badge-failed::before { background: #f87171; }
+    .badge-created { background: rgba(249,115,22,0.15); color: #fb923c; }
+    .badge-created::before { background: #fb923c; }
+    .badge-refunded { background: rgba(168,85,247,0.15); color: #c084fc; }
+    .badge-refunded::before { background: #c084fc; }
+
+    /* ── BUTTONS ── */
+    .btn-gold {
+        background: linear-gradient(135deg, var(--gold), var(--gold-dark, #a07830));
+        color: #fff; border: none; padding: 9px 20px;
+        border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+        cursor: pointer; text-decoration: none; display: inline-flex;
+        align-items: center; gap: 8px; transition: all 0.2s;
+        letter-spacing: 0.3px;
+    }
+    .btn-gold:hover { opacity: 0.85; color: #fff; transform: translateY(-1px); }
+    .btn-outline {
+        background: transparent; border: 1px solid var(--border);
+        color: var(--text-dim); padding: 8px 16px;
+        border-radius: var(--radius-sm); font-size: 13px;
+        cursor: pointer; text-decoration: none; display: inline-flex;
+        align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-danger {
+        background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+        color: #f87171; padding: 8px 16px; border-radius: var(--radius-sm);
+        font-size: 13px; cursor: pointer; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
+    .btn-sm { padding: 5px 12px !important; font-size: 12px !important; }
+    .btn-icon {
+        width: 32px; height: 32px; border-radius: var(--radius-sm);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 13px; text-decoration: none; transition: all 0.2s;
+        cursor: pointer; border: 1px solid var(--border); background: var(--bg3);
+        color: var(--text-dim);
+    }
+    .btn-icon:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-dim); }
+    .btn-icon.danger:hover { color: #f87171; border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); }
+
+    /* ── FORMS ── */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .form-control {
+        width: 100%; padding: 10px 14px; background: var(--bg3);
+        border: 1px solid var(--border); border-radius: var(--radius-sm);
+        color: var(--text); font-family: 'Inter', sans-serif; font-size: 13.5px;
+        transition: all 0.2s; outline: none;
+    }
+    .form-control:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+    .form-control option { background: var(--bg3); }
+    textarea.form-control { resize: vertical; min-height: 100px; }
+    .form-check { display: flex; align-items: center; gap: 10px; }
+    .form-check-input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--gold); }
+    .form-check-label { font-size: 13.5px; color: var(--text); cursor: pointer; }
+    .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+        display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+        padding: 16px 24px; background: var(--bg3); border-bottom: 1px solid var(--border);
+    }
+    .filter-bar .form-control { width: auto; min-width: 140px; padding: 8px 12px; }
+    .filter-bar .search-input { min-width: 240px; }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+    }
+    .section-title-group h2 { font-size: 22px; font-weight: 700; color: var(--text); }
+    .section-title-group p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── MINI BADGE ── */
+    .count-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--bg3); border: 1px solid var(--border);
+        color: var(--text-dim); font-size: 12px; font-weight: 600;
+        padding: 2px 10px; border-radius: 20px;
+    }
+
+    /* ── CHART ── */
+    .chart-wrap { position: relative; height: 220px; }
+
+    /* ── MOBILE TOGGLE ── */
+    .sidebar-toggle {
+        display: none; background: none; border: none;
+        color: var(--text); font-size: 18px; cursor: pointer;
+    }
+    @media (max-width: 992px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.open { transform: translateX(0); }
+        .main-content { margin-left: 0; }
+        .sidebar-toggle { display: flex; }
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 99;
+        }
+        .sidebar-overlay.show { display: block; }
+        .page-content { padding: 20px 16px; }
+        .topbar { padding: 0 16px; }
+    }
+
+    /* ── MISC ── */
+    .text-gold { color: var(--gold) !important; }
+    .text-dim { color: var(--text-muted) !important; }
+    .product-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--bg3); }
+    .product-thumb-placeholder { width: 44px; height: 44px; border-radius: 8px; background: var(--bg3); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 16px; }
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state i { font-size: 3rem; color: var(--text-muted); margin-bottom: 16px; display: block; }
+    .empty-state p { color: var(--text-muted); }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            <span class="icon">✦</span>
+            <div>
+                <div>Isha Return Gifts</div>
+                <div class="brand-sub">Admin Panel</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-label">Overview</div>
+            <a href="{% url 'dashboard_home' %}" class="nav-item {% block nav_home %}{% endblock %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Store</div>
+            <a href="{% url 'dashboard_orders' %}" class="nav-item {% block nav_orders %}{% endblock %}">
+                <i class="fas fa-shopping-bag"></i> Orders
+                {% if pending_count %}<span class="nav-badge">{{ pending_count }}</span>{% endif %}
+            </a>
+            <a href="{% url 'dashboard_products' %}" class="nav-item {% block nav_products %}{% endblock %}">
+                <i class="fas fa-gift"></i> Products
+            </a>
+            <a href="{% url 'dashboard_categories' %}" class="nav-item {% block nav_categories %}{% endblock %}">
+                <i class="fas fa-tags"></i> Categories
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Finance</div>
+            <a href="{% url 'dashboard_payments' %}" class="nav-item {% block nav_payments %}{% endblock %}">
+                <i class="fas fa-credit-card"></i> Payments
+            </a>
+            <a href="{% url 'dashboard_customers' %}" class="nav-item {% block nav_customers %}{% endblock %}">
+                <i class="fas fa-users"></i> Customers
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">System</div>
+            <a href="{% url 'home' %}" class="nav-item" target="_blank">
+                <i class="fas fa-external-link-alt"></i> View Website
+            </a>
+            <a href="/admin/" class="nav-item" target="_blank">
+                <i class="fas fa-cog"></i> Django Admin
+            </a>
+            <a href="{% url 'dashboard_logout' %}" class="nav-item">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="admin-profile">
+            <div class="admin-avatar">{{ request.user.username|first|upper }}</div>
+            <div>
+                <div class="admin-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                <div class="admin-role">Administrator</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:16px;">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <div class="topbar-title">
+                {% block page_title %}Dashboard{% endblock %}
+                {% block page_subtitle %}<span></span>{% endblock %}
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="live-dot">Live</div>
+            <a href="{% url 'home' %}" class="topbar-btn" title="View Website" target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+            <a href="{% url 'dashboard_logout' %}" class="topbar-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-wrap mt-3">
+        {% for message in messages %}
+        <div class="dash-alert {% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Page Content -->
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+// Auto-dismiss alerts
+setTimeout(() => { document.querySelectorAll('.dash-alert').forEach(a => a.style.opacity = '0'); }, 4000);
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

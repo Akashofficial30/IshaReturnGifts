@@ -1,0 +1,26 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Delete {{ type }}{% endblock %}
+{% block page_title %}Delete {{ type }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-title" style="color:#f87171;"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete</span>
+            </div>
+            <div class="dash-card-body" style="text-align:center;padding:40px;">
+                <div style="font-size:3rem;margin-bottom:16px;">🗑️</div>
+                <h4 style="color:var(--text);margin-bottom:8px;">Delete this {{ type }}?</h4>
+                <p style="color:var(--text-muted);margin-bottom:4px;font-size:15px;font-weight:600;">{{ object }}</p>
+                <p style="color:var(--text-muted);font-size:13px;margin-bottom:28px;">This action cannot be undone.</p>
+                <form method="POST" style="display:flex;gap:12px;justify-content:center;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger"><i class="fas fa-trash"></i> Yes, Delete</button>
+                    <a href="javascript:history.back()" class="btn-outline">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

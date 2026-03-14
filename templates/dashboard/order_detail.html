@@ -1,0 +1,186 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Order #{{ order.get_short_order_id }}{% endblock %}
+{% block nav_orders %}active{% endblock %}
+{% block page_title %}Order <span style="color:var(--gold)">#{{ order.get_short_order_id }}</span>{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'dashboard_orders' %}" class="btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+</div>
+
+<div class="row g-4">
+    <!-- Left: Order Info -->
+    <div class="col-lg-8">
+        <!-- Items -->
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-shopping-bag text-gold me-2"></i>Items Ordered</span>
+                <span style="color:var(--text-muted);font-size:13px;">{{ order.items.count }} item{{ order.items.count|pluralize }}</span>
+            </div>
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Unit Price</th>
+                        <th>Qty</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>
+                            <div style="font-weight:500;">{{ item.product_name }}</div>
+                            {% if item.product %}
+                            <a href="{% url 'dashboard_product_edit' item.product.id %}" style="font-size:12px;color:var(--gold);">Edit Product</a>
+                            {% endif %}
+                        </td>
+                        <td style="color:var(--text-dim);">₹{{ item.product_price }}</td>
+                        <td>
+                            <span style="background:var(--bg3);padding:3px 10px;border-radius:12px;font-weight:600;">{{ item.quantity }}</span>
+                        </td>
+                        <td style="font-weight:700;color:var(--gold);">₹{{ item.get_subtotal }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align:right;font-weight:700;font-size:15px;padding:16px;">Total Paid</td>
+                        <td style="font-weight:800;font-size:18px;color:var(--gold);padding:16px;">₹{{ order.total_price }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Update Status Form -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-edit text-gold me-2"></i>Update Order</span>
+            </div>
+            <div class="dash-card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Order Status</label>
+                                <select name="order_status" class="form-control">
+                                    <option value="pending" {% if order.order_status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="confirmed" {% if order.order_status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                    <option value="processing" {% if order.order_status == 'processing' %}selected{% endif %}>Processing</option>
+                                    <option value="shipped" {% if order.order_status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                    <option value="delivered" {% if order.order_status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                    <option value="cancelled" {% if order.order_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Payment Status</label>
+                                <select name="payment_status" class="form-control">
+                                    <option value="pending" {% if order.payment_status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="paid" {% if order.payment_status == 'paid' %}selected{% endif %}>Paid</option>
+                                    <option value="failed" {% if order.payment_status == 'failed' %}selected{% endif %}>Failed</option>
+                                    <option value="refunded" {% if order.payment_status == 'refunded' %}selected{% endif %}>Refunded</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">Internal Notes</label>
+                                <textarea name="notes" class="form-control" rows="3" placeholder="Add notes about this order...">{{ order.notes }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn-gold"><i class="fas fa-save"></i> Update Order</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Customer & Payment Info -->
+    <div class="col-lg-4">
+        <!-- Order Summary -->
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-info-circle text-gold me-2"></i>Order Summary</span>
+            </div>
+            <div class="dash-card-body" style="padding:0;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Order ID</span>
+                    <span style="font-family:monospace;font-weight:700;color:var(--gold);">#{{ order.get_short_order_id }}</span>
+                </div>
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Date</span>
+                    <span>{{ order.created_at|date:"d M Y, H:i" }}</span>
+                </div>
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Payment Status</span>
+                    <span class="badge-status badge-{{ order.payment_status }}">{{ order.payment_status|title }}</span>
+                </div>
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Order Status</span>
+                    <span class="badge-status badge-{{ order.order_status }}">{{ order.order_status|title }}</span>
+                </div>
+                <div style="padding:16px 20px;display:flex;justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Total</span>
+                    <span style="font-weight:800;font-size:18px;color:var(--gold);">₹{{ order.total_price }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-user text-gold me-2"></i>Customer</span>
+            </div>
+            <div class="dash-card-body">
+                <div style="font-size:16px;font-weight:600;margin-bottom:12px;">{{ order.customer_name }}</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim);">
+                        <i class="fas fa-phone" style="color:var(--gold);width:16px;"></i> {{ order.customer_phone }}
+                    </div>
+                    {% if order.customer_email %}
+                    <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim);">
+                        <i class="fas fa-envelope" style="color:var(--gold);width:16px;"></i> {{ order.customer_email }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-map-marker-alt text-gold me-2"></i>Delivery Address</span>
+            </div>
+            <div class="dash-card-body">
+                <div style="font-size:13.5px;line-height:1.8;color:var(--text-dim);">
+                    {{ order.address }}<br>
+                    {{ order.city }}, {{ order.state }}<br>
+                    Pincode: {{ order.pincode }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Info -->
+        {% if order.payment_id %}
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-title"><i class="fas fa-credit-card text-gold me-2"></i>Payment Info</span>
+            </div>
+            <div class="dash-card-body">
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Payment ID</div>
+                <div style="font-family:monospace;font-size:12.5px;color:var(--text);word-break:break-all;background:var(--bg3);padding:8px 12px;border-radius:6px;">{{ order.payment_id }}</div>
+                {% if order.razorpay_order_id %}
+                <div style="font-size:12px;color:var(--text-muted);margin:12px 0 4px;">Razorpay Order ID</div>
+                <div style="font-family:monospace;font-size:12.5px;color:var(--text);word-break:break-all;background:var(--bg3);padding:8px 12px;border-radius:6px;">{{ order.razorpay_order_id }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

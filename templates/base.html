@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Isha Return Gifts – Premium Wedding Return Gifts{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-phone-alt me-1"></i> +91 98765 43210 &nbsp;|&nbsp; <i class="fas fa-envelope me-1"></i> hello@ishareturnGifts.com</span>
+            <span>Free shipping on orders above ₹999 &nbsp;|&nbsp; <i class="fas fa-truck"></i> Pan India Delivery</span>
+        </div>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="site-header sticky-top">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <span class="brand-icon">✦</span>
+                <span class="brand-text">Isha <span class="brand-accent">Return Gifts</span></span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">All Products</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'product_list' %}">All Categories</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}?featured=true">Wedding Gifts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+
+                <div class="header-actions d-flex align-items-center gap-3">
+                    <form class="search-form" action="{% url 'product_list' %}" method="GET">
+                        <div class="search-box">
+                            <input type="text" name="search" placeholder="Search gifts…" class="search-input">
+                            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+
+                    <a href="{% url 'cart' %}" class="cart-btn">
+                        <i class="fas fa-shopping-bag"></i>
+                        {% if cart_count > 0 %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+                    </a>
+
+                    {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="user-btn dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text">Hi, {{ user.first_name|default:user.username }}</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- Messages -->
+{% if messages %}
+<div class="messages-container">
+    <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Main Content -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="site-footer" id="contact">
+    <div class="footer-top">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <h3><span class="brand-icon">✦</span> Isha Return Gifts</h3>
+                        <p>Curating beautiful, meaningful return gifts for your special celebrations. Every gift tells a story of gratitude and joy.</p>
+                        <div class="social-links mt-3">
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                            <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h6 class="footer-heading">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'product_list' %}">Products</a></li>
+                        <li><a href="{% url 'cart' %}">Cart</a></li>
+                        <li><a href="#">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h6 class="footer-heading">Categories</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Wedding Gifts</a></li>
+                        <li><a href="#">Pooja Items</a></li>
+                        <li><a href="#">Home Décor</a></li>
+                        <li><a href="#">Customized</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="footer-heading">Contact Us</h6>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> 123, Gandhi Nagar, Chennai – 600001, Tamil Nadu</li>
+                        <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+                        <li><i class="fas fa-envelope"></i> hello@ishareturnGifts.com</li>
+                        <li><i class="fas fa-clock"></i> Mon–Sat: 9AM – 7PM</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <p class="mb-0">© 2025 Isha Return Gifts. All rights reserved.</p>
+                <p class="mb-0">Made with <i class="fas fa-heart text-danger"></i> for your celebrations</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
